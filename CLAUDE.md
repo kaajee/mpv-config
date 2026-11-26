@@ -8,17 +8,7 @@ i5-12450H + RTX 3050 6GB Laptop, 1440p 144Hz panel. mpv runs as a Flatpak (`io.m
 
 ## Deploying Changes
 
-This directory is a working copy. To apply changes to the running Flatpak install:
-
-```bash
-cp -r /home/kevin/playground/mpv-config/. /home/kevin/.var/app/io.mpv.Mpv/config/mpv/
-```
-
-To pull latest from Flatpak into this repo:
-
-```bash
-cp -r /home/kevin/.var/app/io.mpv.Mpv/config/mpv/. /home/kevin/playground/mpv-config/
-```
+Use the [installation and sync commands in the README](README.md#installation).
 
 ## Architecture
 
@@ -31,15 +21,15 @@ There is no Lua-driven quality bucket engine. Profile selection is entirely decl
 
 ### General profiles (activated in `mpv.conf`)
 
-Listed at the top of `mpv.conf` under "Profiles enable parameters". Currently active by default: `Target` (target-prim colour management), `Dither` (fruit dither), `Tscale` (display-resample + oversample interpolation), `HQ` (ewa_lanczossharp + bilinear cscale + lanczos dscale), `DeBand-low` (deband params; `deband` itself stays off until `[Deband]` fires).
+The default profiles in `mpv.conf` include `ICC`, `Target`, `Dither`, `Tscale`, `HQ`, `DeBand-low`, and `NVIDIA`. `Target` is applied after `ICC` and sets `icc-profile-auto=no`. `NVIDIA` selects NVSharpen and NVScaler.
 
-Commented-out alternatives: `ICC`, `ICC+`, `Dither+`, `Tscale+`, `DeBand-medium/high`, `SDR2HDR`, `HDR-PASS`, `SWscaler`, plus a row of shader profiles (`NNEDI3`, `NNEDI3+`, `ravu-zoom`, `FSRCNNX`, `FSRCNNX+`, `Ani4K`, `AniSD`, `Anime4K`, `SSIM`). Uncomment one to set `glsl-shaders=` permanently.
+To use a different default shader set, replace `profile=NVIDIA` in `mpv.conf` with one of the listed shader profiles.
 
 ### Conditional profiles (`profiles.conf` bottom half)
 
 | Profile | Trigger | Effect |
 |---------|---------|--------|
-| `[SD]` | `height ≤ 720` | apply `FSRCNNX+` (FSRCNNX_x1_distort + SSimDownscaler) |
+| `[SD]` | `width ≤ 1280` and `height ≤ 720` | apply `NVIDIA` (NVSharpen + NVScaler) |
 | `[Deband]` | source bpp < 24, not 8K | `deband=yes` |
 | `[HDR2SDR]` | HDR source on SDR display | tone-mapping params (peak detect, contrast recovery) |
 | `[peak-percentile]` | low avg PQ luma, gpu-next | tighter HDR peak percentile |
@@ -69,10 +59,9 @@ Bundles ACNet, AMD/Nvidia, Ani4Kv2 + AniSD, Anime4K, AnimeJaNai, ArtCNN, Chroma,
 
 | Key | Action |
 |-----|--------|
-| `b` | Toggle deband |
+| `d` | Toggle deband |
 | `a` / `A` | Cycle audio track forward/back |
-| `Ctrl+1–6` | Anime4K presets (A, B, C, A+A, B+B, C+A) |
-| `Ctrl+9` | Restore default shaders |
+| `Ctrl+1–7` | Toggle individual shaders listed in the README |
 | `Ctrl+0` | Clear all GLSL shaders |
 | `x` / `X` | Audio delay −/+ 50ms |
 
